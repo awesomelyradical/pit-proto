@@ -17,7 +17,7 @@ jobs:
         run: |
           buf breaking --against "https://github.com/${GITHUB_REPOSITORY}.git#branch=main"
       - run: buf generate
-            - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: pit-proto-gen
           path: gen
