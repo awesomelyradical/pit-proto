@@ -40,8 +40,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip build twine
-      - run: python -m build pit-proto/python
-      - run: twine upload pit-proto/python/dist/*
+      - run: python -m build python
+      - run: twine upload python/dist/*
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
