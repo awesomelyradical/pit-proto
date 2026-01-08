@@ -1,0 +1,53 @@
+syntax = "proto3";
+package pit.events.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message KeyValue { string key = 1; double value = 2; }
+
+message TradeFillEvent {
+  string event_id = 1;
+  google.protobuf.Timestamp ts = 2;
+  string tenant_id = 3;
+  string series_id = 4;
+  string cell_id = 5;
+
+  string venue = 6;
+  string instrument = 7;
+  string order_id = 8;
+  string strategy_ref = 9;
+
+  double qty = 10;                // signed
+  double price = 11;
+  double fee_usd = 12;
+  double slippage_bps = 13;
+  double notional_usd = 14;
+}
+
+message NAVUpdateEvent {
+  string event_id = 1;
+  google.protobuf.Timestamp ts = 2;
+  string tenant_id = 3;
+  string series_id = 4;
+  string cell_id = 5;
+
+  double nav_usd = 6;
+  double cash_liquid_usd = 7;
+  double unrealized_pnl_usd = 8;
+  double realized_pnl_usd = 9;
+}
+
+message ExposureSnapshotEvent {
+  string event_id = 1;
+  google.protobuf.Timestamp ts = 2;
+  string tenant_id = 3;
+  string series_id = 4;
+  string cell_id = 5;
+
+  double gross_exposure_usd = 6;
+  double net_exposure_usd = 7;
+
+  repeated KeyValue factor_exposure = 8;
+  repeated KeyValue venue_conc_pct = 9;
+  repeated KeyValue liq_metrics = 10;
+}
