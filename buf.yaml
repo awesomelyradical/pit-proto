@@ -1,0 +1,19 @@
+version: v2
+
+modules:
+  - path: proto
+    name: buf.build/awesomelyradical/pit
+
+deps:
+  - buf.build/protocolbuffers/wellknowntypes
+
+lint:
+  use:
+    - STANDARD
+  except:
+    - FIELD_NOT_REQUIRED
+  disallow_comment_ignores: true
+
+breaking:
+  use:
+    - FILE
