@@ -9,6 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # important for breaking checks
+
+      - name: Fetch main branch ref (tag builds are detached)
+        run: |
+          git fetch --no-tags origin main:main
+          git show-ref --heads --tags | head -n 50
 
       - uses: bufbuild/buf-setup-action@v1
       - run: buf lint
