@@ -16,7 +16,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          buf breaking --against "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git#branch=main"
+          buf breaking --against "https://github.com/${GITHUB_REPOSITORY}.git#branch=main"
       - run: buf generate
       - name: Verify git clean (generated code committed)
         run: |
