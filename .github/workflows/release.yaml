@@ -11,11 +11,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: bufbuild/buf-setup-action@v1
       - name: Extract version from tag
         id: version
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Generate protobuf code (needed for version updates)
+        run: buf generate
       - name: Update Cargo.toml version
         run: |
           sed -i 's/version = ".*"/version = "${{ steps.version.outputs.version }}"/' gen/rust/Cargo.toml
