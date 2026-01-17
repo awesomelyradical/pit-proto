@@ -33,17 +33,10 @@ jobs:
       - name: Update pyproject.toml version
         run: |
           sed -i 's/^version = ".*"/version = "${{ steps.version.outputs.version }}"/' python/pyproject.toml
-      - name: Commit and push version updates
+      - name: Verify versions updated
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add python/pyproject.toml
-          if git diff --cached --quiet; then
-            echo "No version changes needed"
-          else
-            git commit -m "chore: Update version to ${{ steps.version.outputs.version }}"
-            git push
-          fi
+          echo "Rust version:" && grep '^version = ' gen/rust/Cargo.toml
+          echo "Python version:" && grep '^version = ' python/pyproject.toml
 
   verify-and-generate:
     needs: update-versions
