@@ -3,7 +3,7 @@ package pit.events.v1;
 
 import "google/protobuf/timestamp.proto";
 
-message KeyValue { string key = 1; double value = 2; }
+message KeyValue { string key = 1; int64 value = 2; }  // value in micros if currency
 
 message TradeFillEvent {
   string event_id = 1;
@@ -17,11 +17,11 @@ message TradeFillEvent {
   string order_id = 8;
   string strategy_ref = 9;
 
-  double qty = 10;                // signed
-  double price = 11;
-  double fee_usd = 12;
-  double slippage_bps = 13;
-  double notional_usd = 14;
+  int64 qty = 10;                 // quantity (signed)
+  int64 price_micros = 11;        // price in USD micros
+  int64 fee_usd_micros = 12;      // fee in USD micros
+  int64 slippage_bps = 13;        // basis points (can stay int)
+  int64 notional_usd_micros = 14; // notional in USD micros
 }
 
 message NAVUpdateEvent {
@@ -31,10 +31,10 @@ message NAVUpdateEvent {
   string series_id = 4;
   string cell_id = 5;
 
-  double nav_usd = 6;
-  double cash_liquid_usd = 7;
-  double unrealized_pnl_usd = 8;
-  double realized_pnl_usd = 9;
+  int64 nav_usd_micros = 6;           // NAV in USD micros
+  int64 cash_liquid_usd_micros = 7;   // cash in USD micros
+  int64 unrealized_pnl_usd_micros = 8; // unrealized PnL in USD micros
+  int64 realized_pnl_usd_micros = 9;  // realized PnL in USD micros
 }
 
 message ExposureSnapshotEvent {
@@ -44,8 +44,8 @@ message ExposureSnapshotEvent {
   string series_id = 4;
   string cell_id = 5;
 
-  double gross_exposure_usd = 6;
-  double net_exposure_usd = 7;
+  int64 gross_exposure_usd_micros = 6; // gross exposure in USD micros
+  int64 net_exposure_usd_micros = 7;   // net exposure in USD micros
 
   repeated KeyValue factor_exposure = 8;
   repeated KeyValue venue_conc_pct = 9;
