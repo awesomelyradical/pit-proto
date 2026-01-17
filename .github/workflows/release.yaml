@@ -80,6 +80,12 @@ jobs:
         run: |
           cp rust-template/Cargo.toml gen/rust/
           cp rust-template/README.md gen/rust/
+      - name: Verify Rust package structure
+        run: |
+          echo "=== gen/rust structure ==="
+          ls -laR gen/rust/
+          test -f gen/rust/Cargo.toml
+          test -f gen/rust/src/lib.rs
       - name: Extract version from tag
         id: version
         run: |

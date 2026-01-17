@@ -13,6 +13,9 @@ categories = ["encoding"]
 
 rust-version = "1.74"
 
+[lib]
+path = "src/lib.rs"
+
 [dependencies]
 prost = "0.13"
 prost-types = "0.13"
