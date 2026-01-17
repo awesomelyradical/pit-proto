@@ -5,7 +5,37 @@ on:
     tags: ["v*"]
 
 jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Update Cargo.toml version
+        run: |
+          sed -i 's/version = ".*"/version = "${{ steps.version.outputs.version }}"/' gen/rust/Cargo.toml
+      - name: Update pyproject.toml version
+        run: |
+          sed -i 's/version = ".*"/version = "${{ steps.version.outputs.version }}"/' python/pyproject.toml
+      - name: Commit and push version updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gen/rust/Cargo.toml python/pyproject.toml
+          if git diff --cached --quiet; then
+            echo "No version changes needed"
+          else
+            git commit -m "chore: Update version to ${{ steps.version.outputs.version }}"
+            git push
+          fi
+
   verify-and-generate:
+    needs: update-versions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
