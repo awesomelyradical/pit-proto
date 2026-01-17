@@ -19,12 +19,16 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Generate protobuf code (needed for version updates)
         run: buf generate
+      - name: Verify gen/rust/Cargo.toml exists
+        run: |
+          ls -la gen/rust/
+          test -f gen/rust/Cargo.toml
       - name: Update Cargo.toml version
         run: |
-          sed -i 's/version = ".*"/version = "${{ steps.version.outputs.version }}"/' gen/rust/Cargo.toml
+          sed -i 's/^version = ".*"/version = "${{ steps.version.outputs.version }}"/' gen/rust/Cargo.toml
       - name: Update pyproject.toml version
         run: |
-          sed -i 's/version = ".*"/version = "${{ steps.version.outputs.version }}"/' python/pyproject.toml
+          sed -i 's/^version = ".*"/version = "${{ steps.version.outputs.version }}"/' python/pyproject.toml
       - name: Commit and push version updates
         run: |
           git config user.name "github-actions[bot]"
