@@ -19,6 +19,10 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Generate protobuf code (needed for version updates)
         run: buf generate
+      - name: Copy Rust package templates
+        run: |
+          cp rust-template/Cargo.toml gen/rust/
+          cp rust-template/README.md gen/rust/
       - name: Verify gen/rust/Cargo.toml exists
         run: |
           ls -la gen/rust/
