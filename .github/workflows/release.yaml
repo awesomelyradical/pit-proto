@@ -5,41 +5,7 @@ on:
     tags: ["v*"]
 
 jobs:
-  update-versions:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: bufbuild/buf-setup-action@v1
-      - name: Extract version from tag
-        id: version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - name: Generate protobuf code (needed for version updates)
-        run: buf generate
-      - name: Copy Rust package templates
-        run: |
-          cp rust-template/Cargo.toml gen/rust/
-          cp rust-template/README.md gen/rust/
-      - name: Verify gen/rust/Cargo.toml exists
-        run: |
-          ls -la gen/rust/
-          test -f gen/rust/Cargo.toml
-      - name: Update Cargo.toml version
-        run: |
-          sed -i 's/^version = ".*"/version = "${{ steps.version.outputs.version }}"/' gen/rust/Cargo.toml
-      - name: Update pyproject.toml version
-        run: |
-          sed -i 's/^version = ".*"/version = "${{ steps.version.outputs.version }}"/' python/pyproject.toml
-      - name: Verify versions updated
-        run: |
-          echo "Rust version:" && grep '^version = ' gen/rust/Cargo.toml
-          echo "Python version:" && grep '^version = ' python/pyproject.toml
-
   verify-and-generate:
-    needs: update-versions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +45,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: pit-proto-gen
-          path: .
+          path: gen
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -88,6 +54,14 @@ jobs:
           rm -rf python/src
           mkdir -p python/src
           rsync -a gen/python/ python/src/
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Update pyproject.toml version
+        run: |
+          sed -i 's/^version = ".*"/version = "${{ steps.version.outputs.version }}"/' python/pyproject.toml
       - run: python -m pip install --upgrade pip build twine
       - run: python -m build ./python
       - run: twine upload ./python/dist/*
@@ -102,6 +76,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: bufbuild/buf-setup-action@v1
       - run: buf generate
+      - name: Copy Rust package templates
+        run: |
+          cp rust-template/Cargo.toml gen/rust/
+          cp rust-template/README.md gen/rust/
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Update Cargo.toml version
+        run: |
+          sed -i 's/^version = ".*"/version = "${{ steps.version.outputs.version }}"/' gen/rust/Cargo.toml
       - uses: dtolnay/rust-toolchain@stable
       - name: Validate crate package
         run: cargo package --manifest-path gen/rust/Cargo.toml
