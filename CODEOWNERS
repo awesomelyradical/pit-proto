@@ -1,0 +1,7 @@
+# Default owners
+* @awesomelyradical/core
+
+# Docs
+/docs/ @awesomelyradical/core
+/.github/ @awesomelyradical/core
+/ai/ @awesomelyradical/core
