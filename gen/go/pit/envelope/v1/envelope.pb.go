@@ -36,6 +36,7 @@ type EventEnvelope struct {
 	PayloadType   string `protobuf:"bytes,8,opt,name=payload_type,json=payloadType,proto3" json:"payload_type,omitempty"`        // "pit.events.v1.TradeFillEvent"
 	Payload       []byte `protobuf:"bytes,9,opt,name=payload,proto3" json:"payload,omitempty"`                                   // raw protobuf bytes for payload_type
 	PayloadSha256 string `protobuf:"bytes,10,opt,name=payload_sha256,json=payloadSha256,proto3" json:"payload_sha256,omitempty"` // optional but recommended
+	Topic         string `protobuf:"bytes,11,opt,name=topic,proto3" json:"topic,omitempty"`                                      // source Kafka topic, e.g. "pit.v1.exec.trade_fill"
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -140,11 +141,18 @@ func (x *EventEnvelope) GetPayloadSha256() string {
 	return ""
 }
 
+func (x *EventEnvelope) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
 var File_pit_envelope_v1_envelope_proto protoreflect.FileDescriptor
 
 const file_pit_envelope_v1_envelope_proto_rawDesc = "" +
 	"\n" +
-	"\x1epit/envelope/v1/envelope.proto\x12\x0fpit.envelope.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x02\n" +
+	"\x1epit/envelope/v1/envelope.proto\x12\x0fpit.envelope.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc2\x02\n" +
 	"\rEventEnvelope\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\tR\aeventId\x12*\n" +
 	"\x02ts\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x02ts\x12\x10\n" +
@@ -156,7 +164,8 @@ const file_pit_envelope_v1_envelope_proto_rawDesc = "" +
 	"\fpayload_type\x18\b \x01(\tR\vpayloadType\x12\x18\n" +
 	"\apayload\x18\t \x01(\fR\apayload\x12%\n" +
 	"\x0epayload_sha256\x18\n" +
-	" \x01(\tR\rpayloadSha256B\xcb\x01\n" +
+	" \x01(\tR\rpayloadSha256\x12\x14\n" +
+	"\x05topic\x18\v \x01(\tR\x05topicB\xcb\x01\n" +
 	"\x13com.pit.envelope.v1B\rEnvelopeProtoP\x01ZGgithub.com/awesomelyradical/pit-proto/gen/go/pit/envelope/v1;envelopev1\xa2\x02\x03PEX\xaa\x02\x0fPit.Envelope.V1\xca\x02\x0fPit\\Envelope\\V1\xe2\x02\x1bPit\\Envelope\\V1\\GPBMetadata\xea\x02\x11Pit::Envelope::V1b\x06proto3"
 
 var (

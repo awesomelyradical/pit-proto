@@ -19,4 +19,5 @@ message EventEnvelope {
 
   bytes payload = 9;       // raw protobuf bytes for payload_type
   string payload_sha256 = 10; // optional but recommended
+  string topic = 11;       // source Kafka topic, e.g. "pit.v1.exec.trade_fill"
 }
