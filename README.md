@@ -9,3 +9,6 @@ PIT Protocol schemas and generated artifacts. Buf-first; publishes language arti
 
 ## Quickstart
 See CONTRIBUTING.md.
+
+## Agent Setup
+- Read `AGENT_QUICKSTART.md` before starting tasks in this repository.
