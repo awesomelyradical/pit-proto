@@ -1,5 +1,9 @@
 python/src
-gen/
+# gen/go is tracked (Go module artifact, resolved by Go module proxy at git tag).
+# gen/python and gen/rust are NOT tracked - they are regenerated at release time
+# and shipped via PyPI / crates.io publish jobs.
+gen/python/
+gen/rust/
 # Rust template build artifacts (template is published; build outputs are local-only)
 rust-template/target/
 rust-template/Cargo.lock
