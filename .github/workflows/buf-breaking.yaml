@@ -27,6 +27,8 @@ jobs:
 
       - name: Install buf
         uses: bufbuild/buf-setup-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version: "1.62.1"
 
