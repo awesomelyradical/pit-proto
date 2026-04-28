@@ -4,20 +4,41 @@ package pit.envelope.v1;
 import "google/protobuf/timestamp.proto";
 
 message EventEnvelope {
-  string event_id = 1;
-  google.protobuf.Timestamp ts = 2;
+  // ── Identity ──────────────────────────────────────────────────────────────
+  string event_id = 1;              // UUID/ULID; globally unique per event
+  google.protobuf.Timestamp ts = 2; // event time (wall clock of producer)
 
-  // Routing + multi-tenant safety invariants
-  string key = 3;      // "t/{tenant}/s/{series}/c/{cell}" or "t/{tenant}/s/{series}"
+  // ── Routing + multi-tenant safety invariants ──────────────────────────────
+  string key = 3;      // canonical partition key; e.g. "t/{tenant}/s/{series}/c/{cell}"
   string tenant = 4;
   string series = 5;
   string cell = 6;     // empty for series-scoped events
 
-  // Provenance
-  string producer = 7;     // "nav-consumer@0.1.3" etc
-  string payload_type = 8; // "pit.events.v1.TradeFillEvent"
+  // ── Provenance ────────────────────────────────────────────────────────────
+  string producer = 7;        // "service@version", e.g. "nav-consumer@0.1.3"
+  string payload_type = 8;    // fully-qualified protobuf name, e.g. "pit.events.v1.TradeFillEvent"
+  bytes  payload = 9;         // raw protobuf bytes for payload_type
+  string payload_sha256 = 10; // hex-encoded SHA-256 of payload bytes; strongly recommended
+  string topic = 11;          // Kafka topic carrying this envelope, e.g. "pit.v1.exec.trade_fill"
 
-  bytes payload = 9;       // raw protobuf bytes for payload_type
-  string payload_sha256 = 10; // optional but recommended
-  string topic = 11;       // source Kafka topic, e.g. "pit.v1.exec.trade_fill"
+  // ── Event classification ──────────────────────────────────────────────────
+  string event_type = 12;     // logical event name, e.g. "TradeFillEvent"; mirrors payload_type short name
+  string schema_version = 13; // semver of the payload schema, e.g. "1.0.0"
+
+  // ── Causality / tracing ───────────────────────────────────────────────────
+  string causation_id = 14;   // event_id of the direct cause; empty if root event
+  string correlation_id = 15; // trace-level grouping id; propagated across causal chain
+  string trace_context = 16;  // W3C traceparent or OpenTelemetry trace context header (optional)
+
+  // ── Processing correctness ────────────────────────────────────────────────
+  string partition_key = 17;  // must match the actual Kafka record key; validated by consumer
+  string idempotency_key = 18; // required for side-effectful commands; consumers dedupe on this
+  string dedupe_scope = 19;   // optional; scopes the dedupe horizon (e.g. "cell", "series", "global")
+
+  // ── PIT-specific routing ──────────────────────────────────────────────────
+  string pit_id = 20;         // PIT identifier; required for PIT-scoped events, empty otherwise
+
+  // ── Governance ────────────────────────────────────────────────────────────
+  string policy_version = 21; // version of the policy manifest in force at emission time (optional)
+  bytes  signature = 22;      // GRG-issued Ed25519 signature over canonical fields (optional)
 }

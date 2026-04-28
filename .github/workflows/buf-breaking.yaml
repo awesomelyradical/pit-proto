@@ -1,0 +1,41 @@
+name: buf-breaking-check
+
+# PR-time enforcement of schema compatibility. Required check.
+# Lints proto + verifies no breaking changes against main.
+# Tag-time release validation lives in release.yaml.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "proto/**"
+      - "buf.yaml"
+      - "buf.gen.yaml"
+      - ".github/workflows/buf-breaking.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  buf-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install buf
+        uses: bufbuild/buf-setup-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: "1.62.1"
+
+      - name: buf lint
+        run: buf lint
+
+      - name: buf breaking (against main)
+        run: |
+          buf breaking \
+            --against "https://github.com/${GITHUB_REPOSITORY}.git#branch=main"
