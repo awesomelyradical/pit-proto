@@ -1,3 +1,6 @@
 python/src
 gen/python/
 gen/rust/
+# Rust template build artifacts (template is published; build outputs are local-only)
+rust-template/target/
+rust-template/Cargo.lock
